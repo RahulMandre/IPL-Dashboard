@@ -1,0 +1,15 @@
+library(flexdashboard)
+library(shiny)
+library(data.table)
+library(ggplot2)
+library(DataExplorer)
+library(tidyverse)
+
+matches = fread("matches.csv")
+deliveries = fread("deliveries.csv")
+deliveries = merge(deliveries,matches[,c("id","season")],by.x = "match_id",by.y = "id",all.x = T)
+matches= matches %>% arrange(season)
+deliveries= deliveries %>% arrange(season)
+
+fwrite(matches,"matches.csv")
+fwrite(deliveries,"deliveries.csv")

@@ -1,0 +1,135 @@
+---
+title: "IPL Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    theme: cosmo
+    vertical_layout: scroll
+    navbar:
+      - {title: "Rahul Mandre",href: "https://linkedin.com/in/rahulmandre"}
+runtime: shiny
+
+---
+
+```{r global, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(data.table)
+library(ggplot2)
+library(DataExplorer)
+library(tidyverse)
+library(kableExtra)
+
+
+matches = fread("matches.csv")
+deliveries = fread("deliveries.csv")
+years=unique(matches$season)
+
+```
+
+IPL Season {.sidebar}
+------------------------------------------------------------------------------
+
+The Indian Premier League (IPL) is a professional Twenty20 cricket league in India contested during March or April and May of every year
+
+```{r }
+selectInput(inputId = "yr",label = h3("Select Year"),choices = years,size = "1%",selectize = F)
+```
+
+row1
+-----------------------------------------------------------------------------------------
+
+### Number of matches played
+
+```{r}
+data=reactive({
+subset(matches,season == input$yr)
+  })
+
+renderValueBox(valueBox(nrow(data())))
+```
+
+### Winning Team
+
+```{r}
+data2=reactive({
+a= subset(matches,season == input$yr)
+b= a[nrow(a),"winner"]
+return(b)
+  })
+
+renderValueBox(valueBox(data2()))
+```
+
+### Player of the final
+
+```{r}
+data3=reactive({
+a= subset(matches,season == input$yr)
+b= a[nrow(a),"player_of_match"]
+return(b)
+  })
+
+renderValueBox(valueBox(data3()))
+```
+
+row2
+--------------------------------------------------------------------------------------------
+
+### Team stats in league stage
+```{r}
+data4=reactive({
+  a = subset(deliveries,season == input$yr)
+  if(input$yr %in% c(2008,2009)){
+    a= subset(a,match_id < (max(match_id)-2))
+  }
+    else{
+    a = subset(a,match_id < (max(match_id)-3))
+    }
+  a1 = a %>% 
+    group_by(batting_team) %>% 
+    summarise(Runs_scored=sum(total_runs)) %>%
+    arrange(desc(Runs_scored))
+  a2 = a %>% 
+    group_by(batting_team,batsman) %>% 
+    summarise(Runs_scored=sum(total_runs)) %>%
+    arrange(desc(Runs_scored)) %>%
+    summarise(batsman = nth(batsman,1))
+  a3 = a %>% 
+    group_by(bowling_team,bowler) %>% 
+    summarise(wickets2=sum(player_dismissed != "")) %>%
+    arrange(desc(wickets2)) %>%
+    summarise(bowler = nth(bowler,1))
+  a=merge(a1,a2,by="batting_team") 
+  a=merge(a,a3,by.x="batting_team",by.y = "bowling_team") %>% arrange(desc(Runs_scored))
+})
+
+DT::renderDataTable({
+  dt=DT::datatable(data4(),rownames = F,style = "bootstrap",colnames = c("Team","Runs","Highest Scorer","Most Wickets"),options = list(columnDefs = list(list(
+            className = 'dt-left', targets = 0
+          ),list(className = 'dt-center', targets = 1:3
+          ))))
+  return(dt)
+})
+```
+
+row3
+--------------------------------------------------------------------------------------------
+
+### Toss Behaviour
+
+```{r}
+data5=reactive({
+a= subset(matches,season == input$yr)
+a1= a %>% group_by(toss_decision=toupper(toss_decision)) %>% summarise(Freq = n())
+return(a1)
+  })
+
+renderPlot(ggplot(data5(),aes(x=toss_decision,y=Freq,fill=Freq))+ geom_col(width = 0.4,stat="identity",position = "dodge")+geom_text(aes(label = Freq),position = position_dodge(width = 0.5),vjust= -0.25,size=6))
+```
+
+### Other
+
+```{r}
+
+```

@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1566061292377.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2254792628",
+    "id" : "1EDFADCA",
+    "lastKnownWriteTime" : 1432331909,
+    "last_content_update" : 1432331909,
+    "path" : "~/R projects/Shiny/How-to-start-2/code/03-reactive.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "17,2",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

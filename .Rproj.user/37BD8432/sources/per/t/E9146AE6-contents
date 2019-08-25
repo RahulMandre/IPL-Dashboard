@@ -1,0 +1,53 @@
+library(shiny)
+library(data.table)
+library(ggplot2)
+library(tidyverse)
+
+forbes = fread("C:/Users/Rahul/Documents/R projects/Shiny/app_1/Forbes2000.csv")
+forbes$category=toupper(forbes$category)
+forbes_new = fread("C:/Users/Rahul/Documents/R projects/Shiny/app_1/Forbes Top2000 2017.csv")
+forbes_new$Industry = toupper(forbes_new$Industry)
+
+forbes$Sector = ifelse(forbes$category %in% c("TRANSPORTATION","CAPITAL GOODS","CONSTRUCTION","AEROSPACE & DEFENSE","CONGLOMERATES" ),"Industrials",
+                      ifelse(forbes$category %in% c("BANKING","INSURANCE","TRADING COMPANIES","DIVERSIFIED FINANCIALS"), "Financials", 
+                              ifelse(forbes$category %in% c("CONSUMER DURABLES" ,"RETAILING","FOOD MARKETS" ,"HOUSEHOLD & PERSONAL PRODUCTS","FOOD DRINK & TOBACCO"),"Consumer Staples",
+                                     ifelse(forbes$category %in% c("HOTELS RESTAURANTS & LEISURE","BUSINESS SERVICES & SUPPLIES" ,"RETAILING","CONSUMER DURABLES"),"Consumer Discretionary",
+                                            ifelse(forbes$category %in% c("DRUGS & BIOTECHNOLOGY","HEALTH CARE EQUIPMENT & SERVICES"),"Health Care",
+                                                   ifelse(forbes$category %in% c("OIL & GAS OPERATIONS"),"Energy",
+                                                          ifelse(forbes$category %in% c("TECHNOLOGY HARDWARE & EQUIPMENT","SOFTWARE & SERVICES","SEMICONDUCTORS"),"INFORMATION TECHNOLOGY", 
+                                                                 ifelse(forbes$category %in% c("TELECOMMUNICATIONS SERVICES"),"TELECOMMUNICATIONS SERVICES",
+                                                                        ifelse(forbes$category %in% c("CHEMICALS","MATERIALS"),"MATERIALS",forbes$category)))))))))
+forbes$Sector=toupper(forbes$Sector)
+forbes_new$Sector=toupper(forbes_new$Sector)
+colnames(forbes_new)[c(3,4,5)] = c("name","country","sales")
+
+# Define UI for app that draws a histogram ----
+ui <- fluidPage(
+  selectInput(inputId = "cat", label = "Select Category",
+                     choices = unique(forbes$Sector)),
+  actionButton(inputId = "old",label = "Year 2004"),
+  actionButton(inputId = "new",label = "Year 2017"),
+  dataTableOutput("abc")
+)
+
+# Define server logic required to draw a histogram ----
+server <- function(input, output) {
+  
+ rv = reactiveValues(data = forbes)
+ 
+ observeEvent(input$old,{rv$data = subset(forbes, Sector == input$cat)})
+ observeEvent(input$new,{rv$data = subset(forbes_new, Sector == input$cat)})
+ 
+ #data2 = reactive({ subset(forbes_new,Sector == input$cat)})
+ 
+ output$abc = renderDataTable({
+   rv$data %>% group_by(country) %>% summarise(No_of_companies = n(), sales = sum(sales)) %>% top_n(10) %>% arrange(desc(No_of_companies))
+ })
+ 
+ # output$new = renderDataTable({
+ #   data2() %>% group_by(Country) %>% summarise(No_of_companies = n(),sales = sum(Sales)) %>% top_n(10) %>% arrange(desc(No_of_companies))
+ #   }) 
+}
+
+shinyApp(ui = ui, server = server)
+

@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1566058295638.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1242702369",
+    "id" : "8E8DD181",
+    "lastKnownWriteTime" : 1566760249,
+    "last_content_update" : 1566760249830,
+    "path" : "~/R projects/IPL dashboard/dashboard script.Rmd",
+    "project_path" : "dashboard script.Rmd",
+    "properties" : {
+        "cursorPosition" : "127,123",
+        "scrollLine" : "119",
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

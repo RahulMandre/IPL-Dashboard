@@ -1,0 +1,12 @@
+name: IPL_Dashboard
+title: IPL_Dashboard
+username:
+account: rahulmandre
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1094033
+bundleId: 2351957
+url: https://rahulmandre.shinyapps.io/IPL_Dashboard/
+when: 1566679626.77563
+asMultiple: FALSE
+asStatic: FALSE
